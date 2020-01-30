@@ -247,7 +247,7 @@ class helpWindow():
 
         self.textLicence = Text(self.frameLabel)
         self.textLicence.grid(row=0, column=0)
-        self.licence = open("LICENSE.txt")
+        self.licence = open("LICENSE")
         self.textLicence.insert(1.0, self.licence.read())
 
         self.scroll = Scrollbar(self.frameLabel, command=self.textLicence.yview)
