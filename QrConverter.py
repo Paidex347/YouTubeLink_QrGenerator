@@ -1,6 +1,5 @@
 import qrcode
 import shutil
-import os
 
 from tkinter import *
 from tkinter import messagebox
@@ -125,7 +124,7 @@ class mainWindow():
         if self.custom:
             self.sizeQr = int(self.customVal.get())
 
-        self.dirc = "C:/tmp/{}.png".format(self.nameVar.get())
+        self.dirc = "./Images/Saves/{}.png".format(self.nameVar.get())
         if self.validLink:
             qr = qrcode.QRCode(
                 version=1,
@@ -139,6 +138,7 @@ class mainWindow():
             img = img.resize((self.sizeQr,self.sizeQr),resample=0)
 
             img.save(self.dirc)
+            print(self.dirc)
 
             self.saveQr.config(state=NORMAL)
             self.fileMenu.entryconfig("Exportar", state=NORMAL)
@@ -225,16 +225,17 @@ class mainWindow():
         self.imageScreen.config(file="Images/QrSmall.png")
 
 
+
     def salir(self):
         self.master.destroy()
 
     def ayuda(self):
 
-        messagebox.showinfo("Ayuda", "Para el generar el código QR debes:\n"
+        messagebox.showinfo("Ayuda", "Para el generar el código QR debes:\n\n"
                                              "  > Ingresar el URL de YouTube.\n"                                            
                                              "  > Seleccionar el tamaño.\n"
-                                             "  > Oprimir el botón 'Generar'.\n\n"
-                                             "  > Oprimir el botón 'Exportar'.\n\n")
+                                             "  > Oprimir el botón 'Generar'.\n"
+                                             "  > Oprimir el botón 'Exportar'.")
 
     def info(self):
         helpWin = Toplevel(self.master)
