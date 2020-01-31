@@ -30,7 +30,7 @@ class mainWindow():
 
         self.width = 50
         self.extraHeight = 550
-        self.sizeQr = 51
+        self.sizeQr = 128
         self.custom = False
 
         self.linkLabel = Label(self.frame, text="URL:")
@@ -131,6 +131,11 @@ class mainWindow():
 
                 self.screenState.config(text="Código generado")
 
+                messagebox.showinfo("Código generado", "Código generado con éxito:\n\n"
+                                                       "Nombre: {}.png\n\n"
+                                                       "Carpeta: {}\n\n"
+                                                       "Tamaño: {}x{}".format(self.nameVar.get(), dirc, self.sizeQr, self.sizeQr))
+
             else:
                 messagebox.showwarning("URL no válida", "Ingresa un link de YouTube válido")
         except ValueError:
@@ -193,6 +198,7 @@ class mainWindow():
         self.createBut.config(state=DISABLED)
         self.screenState.config(text="")
         self.sizeVal.set("Pequeño")
+        self.sizeQr = 128
         self.imageScreen.config(file="Images/QrSmall.png")
 
 
