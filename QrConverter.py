@@ -12,7 +12,7 @@ from tkinter import ttk
 class mainWindow():
     def __init__(self, master):
         self.master = master
-        self.master.title("Generador QR")
+        self.master.title("YouTube to QR")
         self.master.geometry("500x350")
         self.master.resizable(0,0)
         self.master.iconbitmap("QrIcon.ico")
@@ -245,7 +245,7 @@ class helpWindow():
     def __init__(self, master):
         self.master = master
         self.master.geometry("350x450")
-        self.master.title("Acerca de Generador QR")
+        self.master.title("Acerca de YouTube to QR")
         self.master.resizable(0, 0)
         self.master.iconbitmap("QrIcon.ico")
         self.frame = Frame(self.master)
@@ -258,7 +258,7 @@ class helpWindow():
         self.labelimage.grid(row=0, column=0, columnspan=2)
         self.labelimage.image = self.logoImage
 
-        self.labeltitle = Label(self.frame, text="GENERADOR DE CODIGO QR")
+        self.labeltitle = Label(self.frame, text="YOUTUBE TO QR")
         self.labeltitle.grid(row=1, column=0, columnspan=2)
 
         self.labelDescrip = Label(self.frame, text="Generador de códigos QR para links de YouTube")
@@ -266,7 +266,7 @@ class helpWindow():
 
         self.labelversion = Label(self.frame, text="Version:")
         self.labelversion.grid(row=3, column=0, sticky='e')
-        self.labelnumVer = Label(self.frame, text="1.0")
+        self.labelnumVer = Label(self.frame, text="1.5")
         self.labelnumVer.grid(row=3, column=1, sticky='w')
 
         self.frameLabel = LabelFrame(self.frame, text="Licencia")
