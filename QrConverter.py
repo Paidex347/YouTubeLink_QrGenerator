@@ -1,7 +1,12 @@
 import qrcode
+import shutil
+import os
+
 from tkinter import *
 from tkinter import messagebox
 from tkinter import filedialog
+from tkinter import ttk
+
 
 
 class mainWindow():
@@ -14,8 +19,8 @@ class mainWindow():
         self.frame = Frame(self.master)
         self.frame.pack()
 
-        self.linkVar = StringVar()
-        self.direcVAR = StringVar()
+        self.inputVar = StringVar()
+        self.inputVar.trace('w', self.validateLink)
         self.nameVar = StringVar()
         self.sizeVal = StringVar()
         self.sizeVal.set("Pequeño")
@@ -32,39 +37,46 @@ class mainWindow():
         self.extraHeight = 550
         self.sizeQr = 128
         self.custom = False
+        self.validLink = False
+        self.dirc = ""
 
-        self.linkLabel = Label(self.frame, text="URL:")
-        self.linkLabel.grid(row=0, column=0,sticky='e')
+        self.optionFrame =Frame(self.frame)
+        self.optionFrame.grid(row=0, column=0, columnspan=4, pady=5)
 
-        self.linkEntry = Entry(self.frame, textvariable=self.linkVar, width=self.width)
-        self.linkEntry.grid(row=0, column=1)
+        '''self.urlOption = Button(self.optionFrame, text="YouTube URL", width=10)
+        self.urlOption.grid(row=0, column=0, padx=10)
+        self.textOption = Button(self.optionFrame, text="Text", width=10)
+        self.textOption.grid(row=0, column=1, padx=10)'''
 
-        self.direcLabel = Label(self.frame, text="Nombre:")
-        self.direcLabel.grid(row=2, column=0,sticky='e')
+        self.linkLabel = Label(self.frame, text=" YouTube URL:")
+        self.linkLabel.grid(row=1, column=0,sticky='e')
 
-        self.nameEntry = Entry(self.frame, textvariable=self.nameVar, width=self.width)
-        self.nameEntry.grid(row=2, column=1)
-
-        self.saveQr = Button(self.frame, text="Guardar como", command=self.directory)
-        self.saveQr.grid(row=2, column=2, columnspan=2, padx=10)
+        self.linkEntry = Entry(self.frame, textvariable=self.inputVar, width=self.width)
+        self.linkEntry.grid(row=1, column=1)
 
         self.frame_size = Frame(self.frame)
-        self.frame_size.grid(row=3, column=0, columnspan=3, sticky='w')
+        self.frame_size.grid(row=2, column=1, columnspan=3, sticky='w')
 
-        self.direcLabel = Label(self.frame_size, text="Tamaño:")
-        self.direcLabel.grid(row=0, column=0, sticky='e')
+        self.direcLabel = Label(self.frame, text="Tamaño:")
+        self.direcLabel.grid(row=2, column=0, sticky='e')
 
         self.sizeOptions = OptionMenu(self.frame_size, self.sizeVal, "Pequeño", "Mediano", "Grande", "Custom")
         self.sizeOptions.grid(row=0, column=1, sticky='w')
 
         self.createBut = Button(self.frame, text="Generar", state=DISABLED, command=self.crateQR)
-        self.createBut.grid(row=4, column=0, columnspan=4)
+        self.createBut.grid(row=3, column=0, columnspan=4)
 
-        self.screenState = Label(self.frame, width=20, height=2, relief="groove")
-        self.screenState.grid(row=5, column=0, columnspan=4, pady=10)
+        self.frameButons =Frame(self.frame)
+        self.frameButons.grid(row=4, column=0, columnspan=4)
+
+        self.limpiarBut = Button(self.frameButons, text="Limpiar", command=self.limpiar)
+        self.limpiarBut.grid(row=0, column=0, pady=10)
+
+        self.saveQr = Button(self.frameButons, text="Exportar", command=self.exportar, state=DISABLED)
+        self.saveQr.grid(row=0, column=1, padx=10)
 
         self.screenImage = Label(self.frame, image=self.imageScreen, relief="groove")
-        self.screenImage.grid(row=6, column=0, columnspan=4, pady=2)
+        self.screenImage.grid(row=5, column=0, columnspan=4, pady=2)
         self.screenImage.image = self.imageScreen
 
         self.screenDescrp = Label(self.frame, textvariable=self.textScreen)
@@ -85,61 +97,50 @@ class mainWindow():
         self.helpMenu.add_separator()
         self.helpMenu.add_command(label="Acerca de..", command=self.info)
 
-
-
         self.barraMenu.add_cascade(label="Archivo", menu=self.fileMenu)
         self.barraMenu.add_cascade(label="Ayuda", menu=self.helpMenu)
 
 
-    def directory(self):
-        direc = filedialog.askdirectory()
-        if not direc == "":
-            self.createBut.config(state=NORMAL)
-            self.direcVAR.set(direc)
+    def exportar(self):
+        types = [("Image types","*.png")]
+        direc = filedialog.asksaveasfilename(title="Select folder",defaultextension=".png", filetypes=types)
+        try:
+            shutil.move(self.dirc, direc)
+            messagebox.showinfo("Código generado", "Código generado con éxito:\n\n"
+                                                   "Carpeta: {}\n\n"
+                                                   "Tamaño: {}x{}".format(direc, self.sizeQr,self.sizeQr))
+        except FileNotFoundError:
+            pass
+
 
     def crateQR(self):
-        data = self.linkVar
+        data = self.inputVar
+        self.nameVar.set("QrCode")
 
-        youtube_regex = (
-            r'(https?://)?(www\.)?'
-            '(youtube|youtu|youtube-nocookie)\.(com|be)/'
-            '(watch\?v=|embed/|v/|.+\?v=)?([^&=%\?]{11})')
+        if self.custom:
+            self.sizeQr = int(self.customVal.get())
 
-        youtube_regex_match = re.match(youtube_regex, data.get())
-        try:
-            if self.custom:
-                self.sizeQr = int(self.customVal.get())
-            else:
-                pass
+        self.dirc = "C:/tmp/{}.png".format(self.nameVar.get())
+        if self.validLink:
+            qr = qrcode.QRCode(
+                version=1,
+                error_correction=qrcode.constants.ERROR_CORRECT_H,
+                box_size=10,
+                border=4
+            )
+            qr.add_data(data.get())
+            qr.make(fit=True)
+            img = qr.make_image(fill='black', back_color='white')
+            img = img.resize((self.sizeQr,self.sizeQr),resample=0)
 
-            if youtube_regex_match:
+            img.save(self.dirc)
 
-                dirc = self.direcVAR.get() + "/" + '{}.png'.format(self.nameVar.get())
+            self.saveQr.config(state=NORMAL)
 
-                qr = qrcode.QRCode(
-                    version=1,
-                    error_correction=qrcode.constants.ERROR_CORRECT_H,
-                    box_size=10,
-                    border=4
-                )
-                qr.add_data(data.get())
-                qr.make(fit=True)
-                img = qr.make_image(fill='black', back_color='white')
-                img = img.resize((self.sizeQr,self.sizeQr),resample=0)
-
-                img.save(dirc)
-
-                self.screenState.config(text="Código generado")
-
-                messagebox.showinfo("Código generado", "Código generado con éxito:\n\n"
-                                                       "Nombre: {}.png\n\n"
-                                                       "Carpeta: {}\n\n"
-                                                       "Tamaño: {}x{}".format(self.nameVar.get(), dirc, self.sizeQr, self.sizeQr))
-
-            else:
-                messagebox.showwarning("URL no válida", "Ingresa un link de YouTube válido")
-        except ValueError:
-            messagebox.showerror("Resolución no válida", "Escribe la resolución de la imagen")
+            if not self.custom:
+                self.imageScreen.config(file=self.dirc)
+        else:
+            pass
 
     def optionSize(self, *args):
         size = self.sizeVal.get()
@@ -188,15 +189,28 @@ class mainWindow():
             self.customVal.set("".join(filter(str.isdigit, value)))
         if len(value) > 4:
             self.customVal.set(value[:4])
-
         self.textScreen.set("Se muestra 256X256, pero se exportará {}x{}".format(self.customVal.get(), self.customVal.get()))
+
+    def validateLink(self, *args):
+        data = self.inputVar
+        youtube_regex = (
+            r'(https?://)?(www\.)?'
+            '(youtube|youtu|youtube-nocookie)\.(com|be)/'
+            '(watch\?v=|embed/|v/|.+\?v=)?([^&=%\?]{11})')
+        youtube_regex_match = re.match(youtube_regex, data.get())
+
+        if youtube_regex_match:
+            self.createBut.config(state=NORMAL)
+            self.validLink = True
+
+        else:
+            self.createBut.config(state=DISABLED)
+            self.validLink = True
 
     def limpiar(self):
         self.master.geometry("500x350")
         self.linkEntry.delete(0, END)
-        self.nameEntry.delete(0, END)
         self.createBut.config(state=DISABLED)
-        self.screenState.config(text="")
         self.sizeVal.set("Pequeño")
         self.sizeQr = 128
         self.imageScreen.config(file="Images/QrSmall.png")
@@ -208,12 +222,10 @@ class mainWindow():
     def ayuda(self):
 
         messagebox.showinfo("Ayuda", "Para el generar el código QR debes:\n"
-                                             "  > Ingresar el URL de YouTube.\n"
-                                             "  > Ingresar un nombre para la imágen.\n"
-                                             "  > Seleccionar un directorio para guardar.\n"
+                                             "  > Ingresar el URL de YouTube.\n"                                            
                                              "  > Seleccionar el tamaño.\n"
                                              "  > Oprimir el botón 'Generar'.\n\n"
-                                             "Nota: las imágenes se guardarán en PNG.")
+                                             "  > Oprimir el botón 'Exportar'.\n\n")
 
     def info(self):
         helpWin = Toplevel(self.master)
