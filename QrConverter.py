@@ -63,11 +63,13 @@ class mainWindow():
         self.sizeOptions = OptionMenu(self.frame_size, self.sizeVal, "Pequeño", "Mediano", "Grande", "Custom")
         self.sizeOptions.grid(row=0, column=1, sticky='w')
 
+        ttk.Separator(self.frame, orient=HORIZONTAL).grid(row=3, column=0, columnspan=4, sticky='we', pady=10)
+
         self.createBut = Button(self.frame, text="Generar", state=DISABLED, command=self.crateQR)
-        self.createBut.grid(row=3, column=0, columnspan=4)
+        self.createBut.grid(row=4, column=0, columnspan=4)
 
         self.frameButons =Frame(self.frame)
-        self.frameButons.grid(row=4, column=0, columnspan=4)
+        self.frameButons.grid(row=5, column=0, columnspan=4)
 
         self.limpiarBut = Button(self.frameButons, text="Limpiar", command=self.limpiar)
         self.limpiarBut.grid(row=0, column=0, pady=10)
@@ -76,7 +78,7 @@ class mainWindow():
         self.saveQr.grid(row=0, column=1, padx=10)
 
         self.screenImage = Label(self.frame, image=self.imageScreen, relief="groove")
-        self.screenImage.grid(row=5, column=0, columnspan=4, pady=2)
+        self.screenImage.grid(row=6, column=0, columnspan=4, pady=2)
         self.screenImage.image = self.imageScreen
 
         self.screenDescrp = Label(self.frame, textvariable=self.textScreen)
@@ -88,6 +90,9 @@ class mainWindow():
         self.master.config(menu=self.barraMenu)
 
         self.fileMenu = Menu(self.barraMenu, tearoff=0)
+        self.fileMenu.add_command(label="Generar", command=self.crateQR, state=DISABLED)
+        self.fileMenu.add_command(label="Exportar", command=self.exportar, state=DISABLED)
+        self.fileMenu.add_separator()
         self.fileMenu.add_command(label="Limpiar", command=self.limpiar)
         self.fileMenu.add_separator()
         self.fileMenu.add_command(label="Cerrar", command=self.salir)
@@ -136,6 +141,8 @@ class mainWindow():
             img.save(self.dirc)
 
             self.saveQr.config(state=NORMAL)
+            self.fileMenu.entryconfig("Exportar", state=NORMAL)
+
 
             if not self.custom:
                 self.imageScreen.config(file=self.dirc)
@@ -201,10 +208,12 @@ class mainWindow():
 
         if youtube_regex_match:
             self.createBut.config(state=NORMAL)
+            self.fileMenu.entryconfig("Generar", state=NORMAL)
             self.validLink = True
 
         else:
             self.createBut.config(state=DISABLED)
+            self.fileMenu.entryconfig("Generar", state=NORMAL)
             self.validLink = True
 
     def limpiar(self):
