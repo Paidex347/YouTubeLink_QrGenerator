@@ -213,7 +213,7 @@ class mainWindow():
 
         else:
             self.createBut.config(state=DISABLED)
-            self.fileMenu.entryconfig("Generar", state=NORMAL)
+            self.fileMenu.entryconfig("Generar", state=DISABLED)
             self.validLink = True
 
     def limpiar(self):
