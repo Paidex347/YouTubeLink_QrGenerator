@@ -5,6 +5,12 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter import filedialog
 from tkinter import ttk
+import random
+
+x = random.randint(1,10)
+
+print(x)
+
 
 
 
@@ -109,7 +115,7 @@ class mainWindow():
         types = [("Image types","*.png")]
         direc = filedialog.asksaveasfilename(title="Select folder",defaultextension=".png", filetypes=types)
         try:
-            shutil.move(self.dirc, direc)
+            shutil.copy(self.dirc, direc)
             messagebox.showinfo("Código generado", "Código generado con éxito:\n\n"
                                                    "Carpeta: {}\n\n"
                                                    "Tamaño: {}x{}".format(direc, self.sizeQr,self.sizeQr))
