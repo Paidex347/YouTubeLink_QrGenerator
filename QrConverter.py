@@ -5,30 +5,27 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter import filedialog
 from tkinter import ttk
-import random
-
-x = random.randint(1,10)
-
-print(x)
-
-
+from ttkthemes import themed_tk as tk
+import os
 
 
 class mainWindow():
     def __init__(self, master):
+        self.standarSize = "400x350"
         self.master = master
         self.master.title("YouTube to QR")
-        self.master.geometry("500x350")
+        self.master.geometry(self.standarSize)
         self.master.resizable(0,0)
         self.master.iconbitmap("QrIcon.ico")
-        self.frame = Frame(self.master)
-        self.frame.pack()
+        self.frame = ttk.Frame(self.master)
+        self.frame.pack(expand=1, fill=BOTH, side=LEFT)
 
         self.inputVar = StringVar()
         self.inputVar.trace('w', self.validateLink)
         self.nameVar = StringVar()
         self.sizeVal = StringVar()
         self.sizeVal.set("Pequeño")
+        self.options = ["Pequeño", "Mediano", "Grande", "Custom"]
         self.sizeVal.trace('w', self.optionSize)
         self.customVal = StringVar()
         self.customVal.trace('w', self.validate)
@@ -45,48 +42,50 @@ class mainWindow():
         self.validLink = False
         self.dirc = ""
 
-        self.optionFrame =Frame(self.frame)
+        self.optionFrame =ttk.Frame(self.frame)
         self.optionFrame.grid(row=0, column=0, columnspan=4, pady=5)
 
-        '''self.urlOption = Button(self.optionFrame, text="YouTube URL", width=10)
+        '''self.urlOption = ttk.Button(self.optionFrame, text="YouTube URL", width=10)
         self.urlOption.grid(row=0, column=0, padx=10)
-        self.textOption = Button(self.optionFrame, text="Text", width=10)
+        self.textOption = ttk.Button(self.optionFrame, text="Text", width=10)
         self.textOption.grid(row=0, column=1, padx=10)'''
 
-        self.linkLabel = Label(self.frame, text=" YouTube URL:")
-        self.linkLabel.grid(row=1, column=0,sticky='e')
+        self.linkLabel = ttk.Label(self.frame, text=" YouTube URL:")
+        self.linkLabel.grid(row=1, column=0, sticky='e')
 
-        self.linkEntry = Entry(self.frame, textvariable=self.inputVar, width=self.width)
+        self.linkEntry = ttk.Entry(self.frame, textvariable=self.inputVar, width=self.width)
         self.linkEntry.grid(row=1, column=1)
 
-        self.frame_size = Frame(self.frame)
+        self.frame_size = ttk.Frame(self.frame)
         self.frame_size.grid(row=2, column=1, columnspan=3, sticky='w')
 
-        self.direcLabel = Label(self.frame, text="Tamaño:")
+        self.direcLabel = ttk.Label(self.frame, text="Tamaño:")
         self.direcLabel.grid(row=2, column=0, sticky='e')
 
-        self.sizeOptions = OptionMenu(self.frame_size, self.sizeVal, "Pequeño", "Mediano", "Grande", "Custom")
+
+
+        self.sizeOptions = ttk.OptionMenu(self.frame_size, self.sizeVal, self.options[0], *self.options)
         self.sizeOptions.grid(row=0, column=1, sticky='w')
 
         ttk.Separator(self.frame, orient=HORIZONTAL).grid(row=3, column=0, columnspan=4, sticky='we', pady=10)
 
-        self.createBut = Button(self.frame, text="Generar", state=DISABLED, command=self.crateQR)
+        self.createBut = ttk.Button(self.frame, text="Generar", state=DISABLED, command=self.crateQR)
         self.createBut.grid(row=4, column=0, columnspan=4)
 
-        self.frameButons =Frame(self.frame)
+        self.frameButons =ttk.Frame(self.frame)
         self.frameButons.grid(row=5, column=0, columnspan=4)
 
-        self.limpiarBut = Button(self.frameButons, text="Limpiar", command=self.limpiar)
+        self.limpiarBut = ttk.Button(self.frameButons, text="Limpiar", command=self.limpiar)
         self.limpiarBut.grid(row=0, column=0, pady=10)
 
-        self.saveQr = Button(self.frameButons, text="Exportar", command=self.exportar, state=DISABLED)
+        self.saveQr = ttk.Button(self.frameButons, text="Exportar", command=self.exportar, state=DISABLED)
         self.saveQr.grid(row=0, column=1, padx=10)
 
-        self.screenImage = Label(self.frame, image=self.imageScreen, relief="groove")
+        self.screenImage = ttk.Label(self.frame, image=self.imageScreen, relief="groove")
         self.screenImage.grid(row=6, column=0, columnspan=4, pady=2)
         self.screenImage.image = self.imageScreen
 
-        self.screenDescrp = Label(self.frame, textvariable=self.textScreen)
+        self.screenDescrp = ttk.Label(self.frame, textvariable=self.textScreen)
         self.screenDescrp.grid(row=7, column=0, columnspan=4, pady=2)
 
         #Barra de menu ----------------------->
@@ -160,7 +159,7 @@ class mainWindow():
         if size == "Pequeño":
             self.sizeQr = 128
             self.imageScreen.config(file="Images/QrSmall.png")
-            self.master.geometry("500x330")
+            self.master.geometry(self.standarSize)
             self.textScreen.set("{}x{}".format(128, 128))
             if self.custom:
                 self.customEntry.destroy()
@@ -189,9 +188,9 @@ class mainWindow():
             self.imageScreen.config(file="Images/QrMedium.png")
             self.master.geometry("500x456")
             self.custom = True
-            self.customEntry = Entry(self.frame_size, textvariable=self.customVal, justify='right', width=5)
+            self.customEntry = ttk.Entry(self.frame_size, textvariable=self.customVal, justify='right', width=5)
             self.customEntry.grid(row=0, column=2)
-            self.labelPix = Label(self.frame_size, text="px")
+            self.labelPix = ttk.Label(self.frame_size, text="px")
             self.labelPix.grid(row=0, column=3, sticky='w')
             self.textScreen.set("Se muestra 256X256, pero se exportará {}x{}".format(self.customEntry.get(), self.customEntry.get()))
 
@@ -223,13 +222,13 @@ class mainWindow():
             self.validLink = True
 
     def limpiar(self):
-        self.master.geometry("500x350")
+        self.master.geometry(self.standarSize)
         self.linkEntry.delete(0, END)
         self.createBut.config(state=DISABLED)
+        self.saveQr.config(state=DISABLED)
         self.sizeVal.set("Pequeño")
         self.sizeQr = 128
         self.imageScreen.config(file="Images/QrSmall.png")
-
 
 
     def salir(self):
@@ -261,22 +260,22 @@ class helpWindow():
 
         self.logoImage = PhotoImage(file="Images/QrIcon_About.png")
 
-        self.labelimage = Label(self.frame, image=self.logoImage)
+        self.labelimage = ttk.Label(self.frame, image=self.logoImage)
         self.labelimage.grid(row=0, column=0, columnspan=2)
         self.labelimage.image = self.logoImage
 
-        self.labeltitle = Label(self.frame, text="YOUTUBE TO QR")
+        self.labeltitle = ttk.Label(self.frame, text="YOUTUBE TO QR")
         self.labeltitle.grid(row=1, column=0, columnspan=2)
 
-        self.labelDescrip = Label(self.frame, text="Generador de códigos QR para links de YouTube")
+        self.labelDescrip = ttk.Label(self.frame, text="Generador de códigos QR para links de YouTube")
         self.labelDescrip.grid(row=2, column=0, columnspan=2)
 
-        self.labelversion = Label(self.frame, text="Version:")
+        self.labelversion = ttk.Label(self.frame, text="Version:")
         self.labelversion.grid(row=3, column=0, sticky='e')
-        self.labelnumVer = Label(self.frame, text="1.5")
+        self.labelnumVer = ttk.Label(self.frame, text="1.5")
         self.labelnumVer.grid(row=3, column=1, sticky='w')
 
-        self.frameLabel = LabelFrame(self.frame, text="Licencia")
+        self.frameLabel = ttk.LabelFrame(self.frame, text="Licencia")
         self.frameLabel.grid(row=4, column=0, columnspan=2, sticky="nsew")
 
         self.textLicence = Text(self.frameLabel)
@@ -284,13 +283,13 @@ class helpWindow():
         self.licence = open("LICENSE")
         self.textLicence.insert(1.0, self.licence.read())
 
-        self.scroll = Scrollbar(self.frameLabel, command=self.textLicence.yview)
+        self.scroll = ttk.Scrollbar(self.frameLabel, command=self.textLicence.yview)
         self.scroll.grid(row=0, column=1, sticky='nsew')
 
         self.textLicence.config(font=("Arial", 5),state=DISABLED, yscrollcommand=self.scroll.set)
 
 
-        self.acepButton = Button(self.frame, text="Aceptar", width=20, command=self.acpetar)
+        self.acepButton = ttk.Button(self.frame, text="Aceptar", width=20, command=self.acpetar)
         self.acepButton.grid(row=5, column=0, columnspan=2, pady=10)
 
     def acpetar(self):
@@ -299,6 +298,10 @@ class helpWindow():
 
 if __name__ == '__main__':
 
-    root = Tk()
+    root = tk.ThemedTk()
+
+    root.set_theme("black")
+
     mainWindow(root)
+
     root.mainloop()
